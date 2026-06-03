@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 from email_service import send_mail
 from groceries_helper import save_cart
-import logging
+
 
 
 

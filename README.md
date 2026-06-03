@@ -19,7 +19,7 @@
 
 ### Email Sending
 
-![Email Notification](screenshots/mail_notification.jpg)
+![Email Notification](screenshots/app_mail.jpg)
 ![Email List](screenshots/mail_notification.jpg)
 
 ## 🎯 Σκοπός του Project
