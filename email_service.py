@@ -1,15 +1,14 @@
 # a function that sends an email
+def send_mail(reciever, carts):
 
-from email.mime.text import MIMEText
-import smtplib
-from dotenv import load_dotenv
-import os
+    from email.mime.text import MIMEText
+    import smtplib
+    from dotenv import load_dotenv
+    import os
 
-load_dotenv("credentials.env")
-from_address = os.getenv("from_address")
-password = os.getenv("password")
-
-def send_mail(receiver, carts):
+    load_dotenv("credentials.env")
+    from_address = os.getenv("from_address")
+    password = os.getenv("password")
 
     def format_carts(carts):
         html = ""
@@ -28,7 +27,7 @@ def send_mail(receiver, carts):
     body = f"""
     <html>
     <body>
-    <p>Dear {receiver},</p>
+    <p>Dear {reciever},</p>
 
     <p>Here is your grocery list:</p>
 
@@ -41,14 +40,11 @@ def send_mail(receiver, carts):
     msg = MIMEText(body, "html", "utf-8")
     msg['Subject'] = "Your Grocery list"
     msg["From"] = from_address
-    msg["To"] = receiver
+    msg["To"] = reciever
 
     smtp_object = smtplib.SMTP('smtp.gmail.com', 587)
     smtp_object.starttls()
-    
-    try:
-        smtp_object.login(from_address, password)
-        smtp_object.sendmail(from_address, receiver, msg.as_string())
-    except Exception as e:
-        print(e)
+    smtp_object.login(from_address, password)
+
+    smtp_object.sendmail(from_address, reciever, msg.as_string())
     smtp_object.quit()

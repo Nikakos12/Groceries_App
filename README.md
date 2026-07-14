@@ -7,21 +7,6 @@
 - διαχείριση κατάστασης εφαρμογής (session state)
 - διασύνδεση με εξωτερικές υπηρεσίες (email & Google Sheets)
 
-## 📸 Screenshots
-
-### Main Page
-
-![Main Page](screenshots/main_app.jpg)
-
-### Shopping List
-
-![Main Page Send email](screenshots/main_app_sendmail.jpg)
-
-### Email Sending
-
-![Email Notification](screenshots/app_mail.jpg)
-![Email List](screenshots/mail_notification.jpg)
-
 ## 🎯 Σκοπός του Project
 
 Σκοπός του Project είναι να μπορεί ο χρήστης να οργανώνει τις αγορές του από τα διάφορα καταστήματα, να τις μοιράζεται μέσω email και να γίνεται καταγραφή των λιστών σε ένα Google Sheet.
@@ -102,8 +87,3 @@ streamlit run groceries_app.py
 1. Αντικατάσταση του Google Sheets με την PostgreSQL
 2. Να λειτουργεί για πολλούς ταυτόχρονους χρήστες
 3. Να μπορεί ο χρήστης να αντλεί με βάση ένα χρονικό διάστημα (π.χ. 4/23 - 5/23) τα ψώνια που έκανε
-
-## 💡 Μαθησιακό αποτέλεσμα
-
-Μέσα από αυτό το project απέκτησα πρακτική εμπειρία στην ανάπτυξη μιας web εφαρμογής με Streamlit, η οποία περιλαμβάνει τη διαχείριση δεδομένων σε πραγματικό χρόνο, την αποθήκευση πληροφοριών σε Google Sheets και την αποστολή δεδομένων μέσω email.
-Παράλληλα, εξοικειώθηκα με βασικές έννοιες όπως η διαχείριση κατάστασης εφαρμογής (session state), η οργάνωση του κώδικα σε ξεχωριστά modules και η διασύνδεση με εξωτερικές υπηρεσίες και APIs.

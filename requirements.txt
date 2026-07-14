@@ -1,5 +1,9 @@
 streamlit
 pandas
-python-dotenv
+Authlib
 gspread
 oauth2client
+dotenv
+psycopg
+psycopg[binary]
+google-genai
