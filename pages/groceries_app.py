@@ -4,7 +4,6 @@
 import streamlit as st
 import pandas as pd
 from email_service import send_mail
-from groceries_helper import save_cart
 from database import save_order
 
 
@@ -208,10 +207,7 @@ if st.button("Ολοκλήρωση Καλαθιού"):
             st.success(
                 f"Το κατάστημα '{new_shop}' αποθηκεύτηκε!"
             )
-            save_cart(
-                        new_shop,
-                        current_df
-                    )
+
             st.rerun()
 
     else:
@@ -226,11 +222,6 @@ if st.button("Complete Order"):
 
 if st.session_state.send:
     
-    
-    #### pgsql test ###
-    
-    
-    
     order_id = save_order(
     st.session_state.user_id,
     st.session_state.carts
@@ -241,8 +232,6 @@ if st.session_state.send:
         f"Η παραγγελία αποθηκεύτηκε με ID {order_id}"
     )
     
-    
-    ###### end pgggsql test ################
     
     reciever = st.text_input("Email")
 

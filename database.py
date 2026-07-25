@@ -160,3 +160,31 @@ def save_order(user_id, carts):
 
 
             return order_id
+        
+        
+def get_user_purchase_history(user_id):
+    
+    with get_connection() as conn:
+
+        with conn.cursor() as cur:
+
+            cur.execute(
+                """
+                SELECT
+                    grocery_items.product,
+                    grocery_items.quantity
+                FROM grocery_items
+
+                JOIN orders
+                ON grocery_items.order_id = orders.id
+
+                WHERE orders.user_id = %s
+
+                ORDER BY orders.created_at DESC;
+                """,
+                (user_id,)
+            )
+
+            rows = cur.fetchall()
+
+            return rows

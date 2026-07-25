@@ -1,89 +1,223 @@
-# 🛒 Grocery List App (Streamlit)
+# 🛒 AI Grocery Assistant
 
-Το Grocery List App είναι μία εφαρμογή στην οποία ο χρήστης μπορεί να στείλει μία λίστα με ψώνια με πολλά προϊόντα και καταστήματα, μέσω email.
+A modular AI-powered grocery assistant built with **Gemini Function Calling**, **PostgreSQL**, and **Streamlit**.
 
-Η εφαρμογή αυτή (project) έγινε σαν μία πρόκληση στην μαθησιακή μου πορεία και σαν μέρος ενός portfolio με στόχο την εξάσκηση στην:
-- ανάπτυξη UI με Streamlit
-- διαχείριση κατάστασης εφαρμογής (session state)
-- διασύνδεση με εξωτερικές υπηρεσίες (email & Google Sheets)
+The application allows users to:
 
-## 🎯 Σκοπός του Project
+- Store grocery purchases in a PostgreSQL database.
+- Send grocery lists via email.
+- Interact with an AI assistant that can:
+  - retrieve the user's grocery purchase history,
+  - analyze grocery habits,
+  - send emails (e.g. grocery lists or nutrition analyses) using function calling.
 
-Σκοπός του Project είναι να μπορεί ο χρήστης να οργανώνει τις αγορές του από τα διάφορα καταστήματα, να τις μοιράζεται μέσω email και να γίνεται καταγραφή των λιστών σε ένα Google Sheet.
+## 🎯 Aim of the Project
 
-Παράλληλα, λειτουργεί ως εκπαιδευτικό project για την εξάσκηση σε:
-- βασικές αρχές ανάπτυξης web εφαρμογών με Streamlit
-- χειρισμό δεδομένων με Pandas
-- σύνδεση με εξωτερικά APIs και υπηρεσίες
+This project is a personal educational exercise focused on building an AI agent **from scratch**, without using orchestration frameworks such as **LangChain** or **LangGraph**.
 
-## 🧾 Τι κάνει η εφαρμογή
+The goal is to understand the underlying mechanics of:
 
-Η εφαρμογή επιτρέπει στον χρήστη να:
+- tool/function calling
+- agent loops
+- conversation state management
+- database communication
+- modular backend architecture
 
-- δημιουργεί λίστες αγορών για διαφορετικά supermarkets
-- προσθέτει και αφαιρεί προϊόντα δυναμικά
-- διατηρεί ξεχωριστή λίστα για κάθε κατάστημα
-- αποθηκεύει το ιστορικό αγορών σε Google Sheets
-- στέλνει τη συνολική λίστα μέσω email σε μορφή HTML
+rather than relying on higher-level abstractions.
 
-⚠️ Προς το παρόν η εφαρμογή δεν υποστηρίζει πολλαπλούς ταυτόχρονους χρήστες.
+For a project that uses retrieval-augmented generation (RAG), see my **Website RAG Assistant** repository.
 
-## 🧠 Σχεδιαστική προσέγγιση
+## Agent Arichitecture
 
-Η εφαρμογή έχει σχεδιαστεί με στόχο την απλότητα και την καθαρότητα του κώδικα.
+The GroceryAgent is responsible for orchestrating the interaction between the user, the Gemini model and the available tools.
 
-- Το UI και η βασική λογική βρίσκονται κυρίως σε ένα αρχείο (Streamlit app)
-- Αποφεύγεται η υπερβολική πολυπλοκότητα και η υπεραναλυτική αρχιτεκτονική
-- Χρησιμοποιούνται βοηθητικά modules μόνο όπου βοηθούν στην αναγνωσιμότητα (email αποστολή και αποθήκευση σε Google Sheets)
+When the user submits a prompt, it is first sent to Gemini through the ask_gemini() function.
 
-Η προσέγγιση αυτή επιλέχθηκε συνειδητά ώστε το project να παραμένει κατανοητό, εύκολο στη συντήρηση.
+The model then decides between two possible actions:
 
-## 🛠️ Τεχνολογίες & βιβλιοθήκες που χρησιμοποιήθηκαν
+- Direct response
+If the request can be answered using the model's own knowledge, Gemini returns a text response, which is immediately displayed to the user.
+- Function call
+If external information or an action is required (for example retrieving purchase history from the database or sending an email), Gemini returns a FunctionCall instead of a text response.
 
-Το project βασίζεται στις εξής τεχνολογίες:
+The agent then:
 
-- **Python** – βασική γλώσσα ανάπτυξης
-- **Streamlit** – δημιουργία web interface
-- **Pandas** – διαχείριση δεδομένων (πίνακες προϊόντων)
-- **smtplib** – αποστολή emails μέσω SMTP
-- **gspread** – σύνδεση με Google Sheets
-- **oauth2client** – authentication για Google API
-- **python-dotenv** – διαχείριση ευαίσθητων δεδομένων (credentials)
+- identifies which tool was requested,
+- extracts the required arguments,
+- injects the user_id when needed,
+- executes the corresponding Python function,
+- wraps the result into a FunctionResponse,
+- sends both the function call and its result back to Gemini.
 
-## 📁 Η δομή του project
+This enables the model to continue reasoning using the newly acquired information.
 
-Στο project υπάρχουν τα εξής αρχεία:
+## Agent Loop
 
-- `groceries_app.py`: η κύρια εφαρμογή, η οποία περιέχει το Streamlit UI και όλη τη βασική λειτουργικότητα.
-- `email_service.py`: περιέχει τις συναρτήσεις για την αποστολή της λίστας αγορών μέσω email.
-- `groceries_helper.py`: χειρίζεται την αποθήκευση δεδομένων στο Google Sheets.
-- `requirements.txt`: περιέχει όλες τις απαραίτητες βιβλιοθήκες (dependencies) για την εκτέλεση της εφαρμογής.
-- `.gitignore`: καθορίζει τα αρχεία που δεν ανεβαίνουν στο GitHub (π.χ. credentials).
-- `README.md`: περιγραφή και τεκμηρίωση του project.
+Some user requests require more than a single tool invocation.
 
-### Δομή φακέλων
+For example, if a user asks:
+
+"Analyze my grocery purchases and email me the results."
+
+the model cannot answer immediately. It first needs to:
+
+- retrieve the purchase history,
+- analyze the retrieved data,
+- send the generated analysis by email,
+- return a confirmation message to the user.
+
+To support this behavior, the agent implements an Agent Loop.
+
+The loop repeatedly sends the updated conversation back to Gemini after each tool execution. On every iteration, Gemini decides whether:
+
+- another tool is required, or
+- it has enough information to generate the final answer.
+
+The process continues until Gemini returns a normal text response instead of another function call.
+
+## 🛠️ Tools System
+
+The AI assistant interacts with external tools to access information or perform actions.
+
+Each tool is defined as a Python dictionary containing all the information required by both the Agent and Gemini. Every tool includes:
+
+- the Python function to execute,
+- a natural language description,
+- the required parameters,
+- an inject_user_id flag indicating whether the current user's ID should be automatically passed to the function.
+
+The tool system was designed with modularity in mind, allowing new tools to be added with minimal changes to the existing codebase.
+
+Before each request to Gemini, the application converts all registered tools into FunctionDeclaration objects (build_gemini_tools()), making them available to the model.
+
+When Gemini requests a tool, the Agent:
+
+- identifies the requested tool,
+- extracts the arguments generated by Gemini,
+- injects the user_id when required,
+- executes the corresponding Python function,
+- packages the result as a FunctionResponse,
+- appends the result to the conversation,
+- asks Gemini whether another tool is required.
+
+This design allows Gemini to decide what should be done, while Python is responsible for executing the requested operations.
+
+Right now there are only two tools available:
+1. purchase_history_tool (connects the agent to the database and retrieves purchase history)
+2. send_email_tool (sends emails to a specified recipient)
+
+## Database Communicatioin
+
+The application uses PostgreSQL to persist user data and grocery information. All database operations are isolated inside the database.py module, allowing the rest of the application to remain independent from the database implementation.
+
+The database layer is responsible for:
+
+- authenticating and creating users,
+- storing grocery lists,
+- retrieving a user's purchase history,
+- updating and deleting grocery items.
+
+The AI Agent never communicates directly with the database. Instead, it interacts with the database through Python tools. When Gemini decides that database information is required, it requests the appropriate tool, which internally calls the corresponding database function and returns the result to the agent.
+
+This separation provides several advantages:
+
+- clear separation between AI logic and data access,
+- easier maintenance,
+- improved security by restricting database access to dedicated functions,
+- simpler integration of new database operations in the future.
+
+### Project Architecture
 
 ```text
-groceries-project/
-│
-├── groceries_app.py          # Main Streamlit UI
-├── email_service.py          # Email sending service
-├── groceries_helper.py       # Google Sheets integration
-├── requirements.txt          # Dependencies
-├── .gitignore                # Ignored files
-└── README.md                 # Documentation
+UI (Streamlit)
+        │
+        ▼
+GroceryAgent
+        │
+        ├─────────────┐
+        ▼             ▼
+ Gemini         Tool System
+                      │
+         ┌────────────┴─────────────┐
+         ▼                          ▼
+ Database Tools              Email Tools
+         │                          │
+         ▼                          ▼
+ PostgreSQL                    SMTP
 ```
 
-## ▶️ Πώς να τρέξεις το project
+## Project Structure
 
-### 1. Εγκατάσταση των απαραίτητων βιβλιοθηκών
+```text
+AI_Grocery_Assistant/
 
+│
+├── app.py 
+├── agent.py
+├── database.py
+├── gemini_client.py
+├── tools.py
+├── email_service.py
+│
+├── pages/
+│     ├── Chat.py
+│     ├── Groceries.py
+│
+├── README.md
+│
+└── requirements.txt
+```
+
+## Technologies Used
+
+- Python 3.11
+- Streamlit – Web application and UI
+- Google Gemini API (google-genai SDK) – LLM and Function Calling
+- PostgreSQL – Persistent storage for users and grocery history
+- Psycopg – PostgreSQL database driver
+- Pandas – Data manipulation and grocery table processing
+- SMTP (smtplib) – Sending emails
+- python-dotenv – Environment variable management
+- Streamlit Authentication
+
+## Installation
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/your_username/AI-Grocery-Assistant.git
+cd AI-Grocery-Assistant
+```
+2. Create a Virtual Enviroment
+```bash
+python -m venv .venv
+```
+3. Install dependencies
+'''bash
 pip install -r requirements.txt
+'''
+4. Configure the enviroment
+Create the required enviroment variables (or credentials.json) for:
+a. Gemini API key
+b. PostGreSQL connection
+c. Email account credentials (SMTP)
 
-### 2. Εκκίνηση της Εφαρμογής
-streamlit run groceries_app.py
+5. Run the application
+'''bash
+streamlit run app.py
+'''
 
-## Μελλοντικές Βελτιώσεις
-1. Αντικατάσταση του Google Sheets με την PostgreSQL
-2. Να λειτουργεί για πολλούς ταυτόχρονους χρήστες
-3. Να μπορεί ο χρήστης να αντλεί με βάση ένα χρονικό διάστημα (π.χ. 4/23 - 5/23) τα ψώνια που έκανε
+## What I have learnt
+Building this project helped me better understand how an AI Agent works internally instead of relying on existing frameworks.
+
+Some of the main concepts I explored include:
+
+- implementing a custom Agent Loop
+- using Gemini Function Calling
+- designing a modular tool system
+- orchestrating multiple tool calls within a single conversation
+- separating AI logic, business logic and infrastructure into independent modules
+- integrating PostgreSQL with an AI application
+- building backend services that can be extended with new tools
+
+The main objective of this project was not to build the most feature-rich grocery application, but to understand the mechanisms behind AI agents before using higher-level frameworks such as LangChain or LangGraph.

@@ -48,3 +48,56 @@ def send_mail(reciever, carts):
 
     smtp_object.sendmail(from_address, reciever, msg.as_string())
     smtp_object.quit()
+    
+    
+
+
+
+######## Agentic Email Function ########
+
+def email_tool(recipient, message):
+
+    from email.mime.text import MIMEText
+    import smtplib
+    import os
+
+    from dotenv import load_dotenv
+
+    load_dotenv("credentials.env")
+
+    from_address = os.getenv("from_address")
+    password = os.getenv("password")
+
+
+    msg = MIMEText(
+        message,
+        "plain",
+        "utf-8"
+    )
+
+    msg["Subject"] = "Message from Grocery Assistant"
+    msg["From"] = from_address
+    msg["To"] = recipient
+
+
+    smtp_object = smtplib.SMTP(
+        "smtp.gmail.com",
+        587
+    )
+
+    smtp_object.starttls()
+
+    smtp_object.login(
+        from_address,
+        password
+    )
+
+    smtp_object.sendmail(
+        from_address,
+        recipient,
+        msg.as_string()
+    )
+
+    smtp_object.quit()
+
+    return "Email sent successfully"
